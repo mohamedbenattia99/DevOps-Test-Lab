@@ -10,10 +10,10 @@ jobs:
         with:
           node-version: '14'
       - name: Start MongoDB
-      uses: supercharge/mongodb-github-action@1.7.0
-      with:
-        mongodb-version: ${{ matrix.mongodb-version }}
-        mongodb-port: 27017
+        uses: supercharge/mongodb-github-action@1.7.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
+          mongodb-port: 27017
       - run: npm install
       - run: cd backend && npm install
       - run: cd backend && npm run test
