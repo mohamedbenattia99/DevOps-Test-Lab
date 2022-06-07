@@ -13,13 +13,7 @@ let should = chai.should();
 
 
 chai.use(chaiHttp);
-//Our parent block
-describe('Employees', () => {
-    beforeEach((done) => { //Before each test we empty the database
-        Employee.remove({}, (err) => { 
-           done();           
-        });        
-    });});
+
 /*
   * Test the /GET route
   */
