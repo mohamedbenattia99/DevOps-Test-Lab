@@ -19,12 +19,13 @@ describe('Employees', () => {
         Employee.remove({}, (err) => { 
            done();           
         });        
-    });
+    });});
 /*
   * Test the /GET route
   */
   describe('/GET employee', () => {
       it('it should GET all the employees', (done) => {
+        this.timeout(5000);
         chai.request(server)
             .get('/api')
             .end((err, res) => {
@@ -39,6 +40,8 @@ describe('Employees', () => {
   //Test the POST Route
   describe("/POST employee",() => {
     it("It should POST a new employee", (done) => {
+      this.timeout(5000);
+
       const employee = {
         name: "Mohamed Test",
         email: "testtest@gmail.com",
@@ -59,7 +62,6 @@ describe('Employees', () => {
           done();
           });
     })
-  })
+  });
   //Test Delete Route
 
-});
