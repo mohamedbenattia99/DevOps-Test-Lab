@@ -11,7 +11,7 @@ employeeRoute.route('/create').post((req, res, next) => {
     if (error) {
       return next(error)
     } else {
-      res.json(data)
+      res.status(201).json(data)
     }
   })
 })

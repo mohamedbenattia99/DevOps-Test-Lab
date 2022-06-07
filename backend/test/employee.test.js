@@ -8,6 +8,7 @@ let Employee = require('../models/Employee');
 let chai = require('chai');
 let chaiHttp = require('chai-http');
 let server = require('../server');
+const { response } = require("express");
 let should = chai.should();
 
 
@@ -34,5 +35,31 @@ describe('Employees', () => {
             });
       });
   });
+
+  //Test the POST Route
+  describe("/POST employee",() => {
+    it("It should POST a new employee", (done) => {
+      const employee = {
+        name: "Mohamed Test",
+        email: "testtest@gmail.com",
+        designation : "Finance",
+        phoneNumber : "23222836"
+      };
+      chai.request(server)
+          .post("/api/create")
+          .send(employee)
+          .end((err, response) => {
+            console.log(response.body);
+            response.should.have.status(201);
+            response.body.should.have.property('name').eq("Mohamed Test");
+            response.body.should.have.property('email').eq("testtest@gmail.com");
+            response.body.should.have.property('designation').eq("Finance");
+            response.body.should.have.property('phoneNumber').eq(23222836);
+
+          done();
+          });
+    })
+  })
+  //Test Delete Route
 
 });
