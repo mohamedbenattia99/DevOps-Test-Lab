@@ -21,3 +21,50 @@ jobs:
       - run: npm install
       - run: cd backend && npm install
       - run: cd backend && npm run test
+  Package:
+    runs-on: ubuntu-latest
+    needs:
+      - Test
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: 'Create .env file'
+        run: |
+          touch .env
+          echo CONNECTION_STRING="${{ secrets.MONGO_DB_CONNECTION_STRING }}" >> .env
+          echo APPLICATION_PORT = 3000 >> .env
+          echo MORGAN_ENV = "dev" >> .env
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/employee-crud:latest
+  Deploy:
+    needs: Package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy in EC2
+        env:
+          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY  }}
+          HOSTNAME: ${{ secrets.EC2_HOSTNAME }}
+          USER_NAME: ubuntu
+
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+            sudo docker container stop employee-crud
+            sudo docker container rm employee-crud
+            sudo docker image rm ${{ secrets.DOCKER_HUB_USERNAME }}/employee-crud
+            sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/employee-crud:latest
+            sudo docker run -d -p 3000:3000 --name employee-crud ${{ secrets.DOCKER_HUB_USERNAME }}/employee-crud
+          '
