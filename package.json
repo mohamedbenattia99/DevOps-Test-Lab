@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "npx cypress run",
+    "test:e2e": "npx cypress run",
     "cypress:open": "npx cypress open"
   },
   "private": true,
